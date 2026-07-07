@@ -1,16 +1,16 @@
 package br.com.tarefas.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,24 +44,65 @@ public class TarefaController {
 	private TarefaModelAssembler assembler;
 	
 	@GetMapping
-	public CollectionModel<EntityModel<TarefaResponse>> todasTarefas(@RequestParam Map<String, String> parametros) {
-		List<Tarefa> tarefas = new ArrayList<>();
-		if (parametros.isEmpty()) {
-			tarefas = service.getTodasTarefas();
-		} else {
-			
-			String descricao = parametros.get("descricao");
-			tarefas = service.getTarefasPorDescricao(descricao);
+	public PagedModel<EntityModel<TarefaResponse>> todasTarefas(
+	        @RequestParam(required = false) String descricao,
+	        Pageable pageable
+	) {
+
+	    Page<Tarefa> page;
+
+	    if (descricao == null) {
+	        page = service.getTodasTarefas(pageable);
+	    } else {
+	        page = service.getTarefasPorDescricao(descricao, pageable);
+	    }
+
+	    List<EntityModel<TarefaResponse>> tarefas = page.stream()
+	            .map(assembler::toModel)
+	            .toList();
+
+	    PagedModel.PageMetadata metadata =
+	            new PagedModel.PageMetadata(
+	                    page.getSize(),
+	                    page.getNumber(),
+	                    page.getTotalElements(),
+	                    page.getTotalPages()
+	            );
+
+	    PagedModel<EntityModel<TarefaResponse>> model =
+	            PagedModel.of(tarefas, metadata);
+
+	    model.add(WebMvcLinkBuilder.linkTo(
+	            WebMvcLinkBuilder.methodOn(TarefaController.class)
+	                    .todasTarefas(descricao, pageable)
+	    ).withSelfRel());
+
+	    return model;
+	}
+	
+	@GetMapping("/cursor")
+	public CollectionModel<EntityModel<TarefaResponse>> tarefasPorCursor(
+			@RequestParam(required = false) Integer cursor,
+			@RequestParam(defaultValue = "5") Integer size) {
+		
+		Pageable pageable = PageRequest.of(0,  size);
+		
+		if(cursor == null) {
+			cursor = 0;
 		}
 		
-		List<EntityModel <TarefaResponse>> tarefasModel = tarefas
-				.stream().map(assembler::toModel).collect(Collectors.toList());
+		List<Tarefa> tarefas = service.getTarefasPorCursor(cursor, pageable);
+		List<EntityModel<TarefaResponse>> tarefasModel = tarefas.stream().map(assembler::toModel).toList();
 		
-		return CollectionModel.of(tarefasModel,
-				WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(TarefaController.class).todasTarefas(new HashMap<>()))
-				.withSelfRel()
-				);
-		
+		CollectionModel<EntityModel<TarefaResponse>> model =
+		        CollectionModel.of(
+		                tarefasModel,
+		                WebMvcLinkBuilder.linkTo(
+		                        WebMvcLinkBuilder.methodOn(TarefaController.class)
+		                                .tarefasPorCursor(cursor, size))
+		                        .withSelfRel()
+		        );
+		return model;
 	}
 	
 	@GetMapping("/{id}")

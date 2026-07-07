@@ -3,6 +3,8 @@ package br.com.tarefas.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.tarefas.model.TarefaCategoria;
@@ -15,8 +17,12 @@ public class TarefaCategoriaService {
     @Autowired
     private TarefaCategoriaRepository repositorio;
 
-    public List<TarefaCategoria> getTodasCategorias() {
-        return repositorio.findAll();
+    public Page<TarefaCategoria> getTodasCategorias(Pageable pageable) {
+        return repositorio.findAll(pageable);
+    }
+    
+    public List<TarefaCategoria> getCategoriasPorCursor(Integer cursor, Pageable pageable) {
+    	return repositorio.findByIdGreaterThanOrderByIdAsc(cursor, pageable);
     }
 
     public TarefaCategoria getCategoriaPorId(Integer id) {

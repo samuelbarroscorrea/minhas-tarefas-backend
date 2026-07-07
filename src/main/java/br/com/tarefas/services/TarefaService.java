@@ -1,8 +1,11 @@
 package br.com.tarefas.services;
 
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.tarefas.exception.TarefaStatusException;
@@ -17,12 +20,16 @@ public class TarefaService {
 	@Autowired
 	private TarefaRepository repositorio;
 	
-	public List<Tarefa> getTodasTarefas() {
-		return repositorio.findAll();
+	public Page<Tarefa> getTodasTarefas(Pageable pageable) {
+		return repositorio.findAll(pageable);
 	}
 	
-	public List<Tarefa> getTarefasPorDescricao(String descricao) {
-		return repositorio.findByDescricaoLike("%" + descricao + "%");
+	public List<Tarefa> getTarefasPorCursor(Integer cursor, Pageable pageable) {
+		return repositorio.findByIdGreaterThanOrderByIdAsc(cursor, pageable);
+	}
+	
+	public Page<Tarefa> getTarefasPorDescricao(String descricao, Pageable pageable) {
+		return repositorio.findByDescricaoLike("%" + descricao + "%", pageable);
 	}
 	
 	public Tarefa getTarefaPorId(Integer id) {

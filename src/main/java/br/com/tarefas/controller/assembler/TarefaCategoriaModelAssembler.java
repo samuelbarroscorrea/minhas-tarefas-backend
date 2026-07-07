@@ -2,6 +2,7 @@ package br.com.tarefas.controller.assembler;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -30,7 +31,7 @@ public class TarefaCategoriaModelAssembler implements RepresentationModelAssembl
 		                .withSelfRel(),
 		        WebMvcLinkBuilder.linkTo(
 		                WebMvcLinkBuilder.methodOn(TarefaCategoriaController.class)
-		                        .todasCategorias())
+		                        .todasCategorias(Pageable.unpaged()))
 		                .withRel("categorias"));
 
 		
