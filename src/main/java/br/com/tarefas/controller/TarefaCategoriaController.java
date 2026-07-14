@@ -24,6 +24,7 @@ import br.com.tarefas.controller.request.TarefaCategoriaRequest;
 import br.com.tarefas.controller.response.TarefaCategoriaResponse;
 import br.com.tarefas.model.TarefaCategoria;
 import br.com.tarefas.services.TarefaCategoriaService;
+import jakarta.validation.Valid;
 
 @RestController
 public class TarefaCategoriaController {
@@ -96,7 +97,7 @@ public class TarefaCategoriaController {
 
     @PostMapping("/categoria")
     public TarefaCategoriaResponse salvarCategoria(
-            @RequestBody TarefaCategoriaRequest categoriaReq) {
+    		@Valid @RequestBody TarefaCategoriaRequest categoriaReq) {
 
         TarefaCategoria categoria =
                 mapper.map(categoriaReq, TarefaCategoria.class);

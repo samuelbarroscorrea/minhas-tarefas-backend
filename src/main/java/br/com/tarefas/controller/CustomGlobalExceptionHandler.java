@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,6 +39,23 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 				.header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
 				.body(Problem.create().withTitle("Método não permitido")
 						.withDetail("Você não pode realizar esta operação: ") + ex.getMessage());
+	}
+	
+	@Override
+	protected ResponseEntity<Object> handleHttpMessageNotReadable(
+	        HttpMessageNotReadableException ex,
+	        HttpHeaders headers,
+	        HttpStatusCode status,
+	        WebRequest request) {
+
+	    ErroResponse erro = new ErroResponse(
+	            null,
+	            "JSON inválido ou dados em formato incorreto"
+	    );
+
+	    return ResponseEntity
+	            .badRequest()
+	            .body(erro);
 	}
 	
     @Override

@@ -48,9 +48,10 @@ public class TarefaController {
 	        @RequestParam(required = false) String descricao,
 	        Pageable pageable
 	) {
+		System.out.println("-------------Inicio do offset-----------");
 
 	    Page<Tarefa> page;
-
+	    //TODO Refatorar para ter um único método de paginação, adicionar outros filtro, ordenar a paginação, revisar a api: semantica
 	    if (descricao == null) {
 	        page = service.getTodasTarefas(pageable);
 	    } else {
@@ -76,6 +77,8 @@ public class TarefaController {
 	            WebMvcLinkBuilder.methodOn(TarefaController.class)
 	                    .todasTarefas(descricao, pageable)
 	    ).withSelfRel());
+	    
+	    System.out.println("-------------Fim do offset-----------");
 
 	    return model;
 	}
