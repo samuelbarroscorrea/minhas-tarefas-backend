@@ -1,12 +1,13 @@
 package br.com.tarefas.repository;
 
-import java.util.List;
 
-import org.springframework.data.domain.Pageable;
+
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import br.com.tarefas.model.TarefaCategoria;
 
-public interface TarefaCategoriaRepository extends JpaRepository<TarefaCategoria, Integer> {
-	public List<TarefaCategoria> findByIdGreaterThanOrderByIdAsc(Integer cursor, Pageable pageable);
+public interface TarefaCategoriaRepository extends JpaRepository<TarefaCategoria, Integer>, JpaSpecificationExecutor<TarefaCategoria> {
+	
 }

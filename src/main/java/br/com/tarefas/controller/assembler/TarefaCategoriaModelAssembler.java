@@ -9,6 +9,7 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
 
 import br.com.tarefas.controller.TarefaCategoriaController;
+import br.com.tarefas.controller.request.TarefaCategoriaFiltro;
 import br.com.tarefas.controller.response.TarefaCategoriaResponse;
 import br.com.tarefas.model.TarefaCategoria;
 
@@ -31,7 +32,7 @@ public class TarefaCategoriaModelAssembler implements RepresentationModelAssembl
 		                .withSelfRel(),
 		        WebMvcLinkBuilder.linkTo(
 		                WebMvcLinkBuilder.methodOn(TarefaCategoriaController.class)
-		                        .todasCategorias(Pageable.unpaged()))
+		                        .todasCategorias(new TarefaCategoriaFiltro() ,Pageable.unpaged()))
 		                .withRel("categorias"));
 
 		

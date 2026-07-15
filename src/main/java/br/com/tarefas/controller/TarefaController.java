@@ -2,12 +2,12 @@ package br.com.tarefas.controller;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.ModelAttribute;
+import br.com.tarefas.controller.request.TarefaFiltro;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.hateoas.PagedModel;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.tarefas.controller.assembler.TarefaModelAssembler;
@@ -43,20 +42,16 @@ public class TarefaController {
 	@Autowired
 	private TarefaModelAssembler assembler;
 	
+	
+	
+	
 	@GetMapping
 	public PagedModel<EntityModel<TarefaResponse>> todasTarefas(
-	        @RequestParam(required = false) String descricao,
+	        @ModelAttribute TarefaFiltro filtro,
 	        Pageable pageable
 	) {
 		System.out.println("-------------Inicio do offset-----------");
-
-	    Page<Tarefa> page;
-	    //TODO Refatorar para ter um único método de paginação, adicionar outros filtro, ordenar a paginação, revisar a api: semantica
-	    if (descricao == null) {
-	        page = service.getTodasTarefas(pageable);
-	    } else {
-	        page = service.getTarefasPorDescricao(descricao, pageable);
-	    }
+		Page<Tarefa> page = service.buscar(filtro, pageable);
 
 	    List<EntityModel<TarefaResponse>> tarefas = page.stream()
 	            .map(assembler::toModel)
@@ -75,7 +70,7 @@ public class TarefaController {
 
 	    model.add(WebMvcLinkBuilder.linkTo(
 	            WebMvcLinkBuilder.methodOn(TarefaController.class)
-	                    .todasTarefas(descricao, pageable)
+	                    .todasTarefas(filtro, pageable)
 	    ).withSelfRel());
 	    
 	    System.out.println("-------------Fim do offset-----------");
@@ -83,30 +78,8 @@ public class TarefaController {
 	    return model;
 	}
 	
-	@GetMapping("/cursor")
-	public CollectionModel<EntityModel<TarefaResponse>> tarefasPorCursor(
-			@RequestParam(required = false) Integer cursor,
-			@RequestParam(defaultValue = "5") Integer size) {
-		
-		Pageable pageable = PageRequest.of(0,  size);
-		
-		if(cursor == null) {
-			cursor = 0;
-		}
-		
-		List<Tarefa> tarefas = service.getTarefasPorCursor(cursor, pageable);
-		List<EntityModel<TarefaResponse>> tarefasModel = tarefas.stream().map(assembler::toModel).toList();
-		
-		CollectionModel<EntityModel<TarefaResponse>> model =
-		        CollectionModel.of(
-		                tarefasModel,
-		                WebMvcLinkBuilder.linkTo(
-		                        WebMvcLinkBuilder.methodOn(TarefaController.class)
-		                                .tarefasPorCursor(cursor, size))
-		                        .withSelfRel()
-		        );
-		return model;
-	}
+	
+	
 	
 	@GetMapping("/{id}")
 	public EntityModel<TarefaResponse> umaTarefa(@PathVariable Integer id) {
