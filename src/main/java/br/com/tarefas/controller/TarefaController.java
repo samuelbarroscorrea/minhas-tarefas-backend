@@ -34,16 +34,13 @@ import jakarta.validation.Valid;
 public class TarefaController {
 
 	@Autowired
-	private TarefaService service;
+	private TarefaService tarefaService;
 	
 	@Autowired
-	private ModelMapper mapper;
+	private ModelMapper modelMapper;
 	
 	@Autowired
 	private TarefaModelAssembler assembler;
-	
-	
-	
 	
 	@GetMapping
 	public PagedModel<EntityModel<TarefaResponse>> todasTarefas(
@@ -51,7 +48,7 @@ public class TarefaController {
 	        Pageable pageable
 	) {
 		System.out.println("-------------Inicio do offset-----------");
-		Page<Tarefa> page = service.buscar(filtro, pageable);
+		Page<Tarefa> page = tarefaService.buscar(filtro, pageable);
 
 	    List<EntityModel<TarefaResponse>> tarefas = page.stream()
 	            .map(assembler::toModel)
@@ -83,14 +80,14 @@ public class TarefaController {
 	
 	@GetMapping("/{id}")
 	public EntityModel<TarefaResponse> umaTarefa(@PathVariable Integer id) {
-		Tarefa tarefa = service.getTarefaPorId(id); 
+		Tarefa tarefa = tarefaService.getTarefaPorId(id); 
 		return assembler.toModel(tarefa);
 	}
 	
 	@PostMapping
 	public ResponseEntity<EntityModel<TarefaResponse>> salvarTarefa(@Valid @RequestBody TarefaRequest tarefaReq) {
-		Tarefa tarefa = mapper.map(tarefaReq, Tarefa.class);
-		Tarefa tarefaSalva = service.salvarTarefa(tarefa);
+		Tarefa tarefa = modelMapper.map(tarefaReq, Tarefa.class);
+		Tarefa tarefaSalva = tarefaService.salvarTarefa(tarefa);
 		
 		EntityModel<TarefaResponse> tarefaModel =  assembler.toModel(tarefaSalva);
 		
@@ -105,25 +102,25 @@ public class TarefaController {
 	
 	@DeleteMapping("/{id}")
 	public void excluirTarefa(@PathVariable Integer id) {
-		service.deleteById(id);
+		tarefaService.deleteById(id);
 	}
 	
 	@PutMapping("/{id}/iniciar")
 	public EntityModel<TarefaResponse> iniciarTarefa(@PathVariable Integer id) {
-		 Tarefa tarefa = service.iniciarTarefaPorId(id);
+		 Tarefa tarefa = tarefaService.iniciarTarefaPorId(id);
 		 
 		 return assembler.toModel(tarefa);
 	}
 	
 	@PutMapping("/{id}/concluir")
 	public EntityModel<TarefaResponse> concluirTarefa(@PathVariable Integer id) {
-		Tarefa tarefa = service.concluirTarefaPorId(id);
+		Tarefa tarefa = tarefaService.concluirTarefaPorId(id);
 		return assembler.toModel(tarefa);
 	}
 	
 	@PutMapping("/{id}/cancelar")
 	public EntityModel<TarefaResponse> cancelarTarefa(@PathVariable Integer id) {
-		Tarefa tarefa = service.cancelarTarefaPorId(id);
+		Tarefa tarefa = tarefaService.cancelarTarefaPorId(id);
 		return assembler.toModel(tarefa);
 	}
 	

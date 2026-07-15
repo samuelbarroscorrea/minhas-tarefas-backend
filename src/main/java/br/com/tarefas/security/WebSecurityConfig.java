@@ -52,6 +52,15 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/tarefa/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/tarefa/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/tarefa/**").hasRole("ADMIN")
+                
+                .requestMatchers(HttpMethod.GET, "/categoria/**")
+                .hasAnyRole("USER", "ADMIN")
+
+                .requestMatchers(HttpMethod.POST, "/categoria/**")
+                .hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.DELETE, "/categoria/**")
+                .hasRole("ADMIN")
 
                 .anyRequest().authenticated()
             )

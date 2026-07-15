@@ -34,7 +34,7 @@ public class UsuarioController {
 	private UsuarioModelAssembler assembler;
 	
 	@Autowired
-	private ModelMapper mapper;
+	private ModelMapper modelMapper;
 	
 	@GetMapping("/{id}")
 	public EntityModel<UsuarioResponse> umUsuario(@PathVariable Integer id) {
@@ -45,7 +45,7 @@ public class UsuarioController {
 	
 	@PostMapping
 	public ResponseEntity<EntityModel<UsuarioResponse>> salvarUsuario(@Valid @RequestBody UsuarioRequest usuarioReq) {
-		Usuario usuario = mapper.map(usuarioReq, Usuario.class);
+		Usuario usuario = modelMapper.map(usuarioReq, Usuario.class);
 		Usuario usuarioSalvo = usuarioService.salvar(usuario);
 		EntityModel<UsuarioResponse> usuarioModel = assembler.toModel(usuarioSalvo);
 		
@@ -56,7 +56,7 @@ public class UsuarioController {
 	public ResponseEntity<EntityModel<UsuarioResponse>> atualizarUsuario(
 			@PathVariable Integer id, @Valid @RequestBody UsuarioRequest usuarioReq) {
 		
-		Usuario usuario = mapper.map(usuarioReq, Usuario.class);
+		Usuario usuario = modelMapper.map(usuarioReq, Usuario.class);
 		Usuario usuarioSalvo = usuarioService.atualizar(id, usuario);
 		EntityModel<UsuarioResponse> usuarioModel = assembler.toModel(usuarioSalvo);
 		

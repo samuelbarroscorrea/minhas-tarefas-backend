@@ -3,6 +3,7 @@ package br.com.tarefas.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.mediatype.problem.Problem;
 import org.springframework.http.HttpHeaders;
@@ -32,13 +33,16 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 	}
 	
 	@ExceptionHandler(TarefaStatusException.class)
-	@ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-	ResponseEntity<?> alteraStatusTarefaHandler(TarefaStatusException ex) {
-		return ResponseEntity
-				.status(HttpStatus.METHOD_NOT_ALLOWED)
-				.header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
-				.body(Problem.create().withTitle("Método não permitido")
-						.withDetail("Você não pode realizar esta operação: ") + ex.getMessage());
+	public ResponseEntity<?> alteraStatusTarefaHandler(TarefaStatusException ex) {
+
+	    Problem problem = Problem.create()
+	            .withTitle("Método não permitido")
+	            .withDetail("Você não pode realizar esta operação: " + ex.getMessage());
+
+	    return ResponseEntity
+	            .status(HttpStatus.METHOD_NOT_ALLOWED)
+	            .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
+	            .body(problem);
 	}
 	
 	@Override
@@ -56,6 +60,16 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 	    return ResponseEntity
 	            .badRequest()
 	            .body(erro);
+	}
+	
+	@ExceptionHandler(PropertyReferenceException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ErroResponse propertyReferenceHandler(
+	        PropertyReferenceException ex) {
+
+	    return new ErroResponse(
+	            "Campo de ordenação inválido: " + ex.getPropertyName()
+	    );
 	}
 	
     @Override

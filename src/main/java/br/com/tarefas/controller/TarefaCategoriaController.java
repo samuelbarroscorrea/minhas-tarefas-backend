@@ -28,21 +28,21 @@ import jakarta.validation.Valid;
 public class TarefaCategoriaController {
 
     @Autowired
-    private TarefaCategoriaService service;
+    private TarefaCategoriaService tarefaCategoriaService;
 
     
     @Autowired
-    private ModelMapper mapper;
+    private ModelMapper modelMapper;
 
     @GetMapping
     public PagedModel<EntityModel<TarefaCategoriaResponse>> todasCategorias(
             TarefaCategoriaFiltro filtro,
             Pageable pageable) {
 
-        Page<TarefaCategoria> page = service.buscar(filtro, pageable);
+        Page<TarefaCategoria> page = tarefaCategoriaService.buscar(filtro, pageable);
 
         List<EntityModel<TarefaCategoriaResponse>> categorias = page.stream()
-                .map(categoria -> mapper.map(categoria, TarefaCategoriaResponse.class))
+                .map(categoria -> modelMapper.map(categoria, TarefaCategoriaResponse.class))
                 .map(EntityModel::of)
                 .toList();
 
@@ -59,8 +59,8 @@ public class TarefaCategoriaController {
 
     @GetMapping("/{id}")
     public TarefaCategoriaResponse umaCategoria(@PathVariable Integer id) {
-        return mapper.map(
-                service.getCategoriaPorId(id),
+        return modelMapper.map(
+                tarefaCategoriaService.getCategoriaPorId(id),
                 TarefaCategoriaResponse.class);
     }
 
@@ -69,15 +69,15 @@ public class TarefaCategoriaController {
     		@Valid @RequestBody TarefaCategoriaRequest categoriaReq) {
 
         TarefaCategoria categoria =
-                mapper.map(categoriaReq, TarefaCategoria.class);
+                modelMapper.map(categoriaReq, TarefaCategoria.class);
 
-        return mapper.map(
-                service.salvar(categoria),
+        return modelMapper.map(
+                tarefaCategoriaService.salvar(categoria),
                 TarefaCategoriaResponse.class);
     }
 
     @DeleteMapping("/{id}")
     public void excluirTarefa(@PathVariable Integer id) {
-        service.deleteById(id);
+        tarefaCategoriaService.deleteById(id);
     }
 }
