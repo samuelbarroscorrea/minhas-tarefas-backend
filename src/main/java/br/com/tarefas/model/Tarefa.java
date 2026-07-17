@@ -21,7 +21,7 @@ public class Tarefa {
 	private String descricao;
 	
 	@Enumerated(EnumType.STRING)
-	private TaskStatus status = TaskStatus.ABERTO;
+	private TarefaStatus status = TarefaStatus.ABERTO;
 	
 	@FutureOrPresent(message = "{tarefa.descricao.future-or-present}")
 	private LocalDate dataEntrega;
@@ -30,11 +30,11 @@ public class Tarefa {
 	
 	@ManyToOne
 	@JoinColumn(nullable = false)
-	private TaskCategory categoria;
+	private TarefaCategoria categoria;
 	
 	@ManyToOne
 	@JoinColumn(nullable = false)
-	private User usuario;
+	private Usuario usuario;
 	
 	public String getDescricao() {
 		return descricao;
@@ -52,11 +52,11 @@ public class Tarefa {
 		this.descricao = descricao;
 	}
 	
-	public TaskStatus getStatus() {
+	public TarefaStatus getStatus() {
 		return status;
 	}
 	
-	public void setStatus(TaskStatus status) {
+	public void setStatus(TarefaStatus status) {
 		this.status = status;
 	}
 	
@@ -76,19 +76,19 @@ public class Tarefa {
 		this.visivel = visivel;
 	}
 	
-	public TaskCategory getCategoria() {
+	public TarefaCategoria getCategoria() {
 		return categoria;
 	}
 	
-	public void setCategoria(TaskCategory categoria) {
+	public void setCategoria(TarefaCategoria categoria) {
 		this.categoria = categoria;
 	}
 
-	public User getUsuario() {
+	public Usuario getUsuario() {
 		return usuario;
 	}
 
-	public void setUsuario(User usuario) {
+	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
 	}
 	

@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.tarefas.controller.request.LoginRequest;
 import br.com.tarefas.controller.response.JwtResponse;
-import br.com.tarefas.services.UserService;
+import br.com.tarefas.services.UsuarioService;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
 	@Autowired
-	private UserService usuarioService;
+	private UsuarioService usuarioService;
 	
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
