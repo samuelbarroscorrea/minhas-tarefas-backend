@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import br.com.tarefas.controller.response.ErroResponse;
-import br.com.tarefas.exception.TarefaStatusException;
+import br.com.tarefas.controller.response.ErrorResponse;
+import br.com.tarefas.exception.TaskStatusException;
 import jakarta.persistence.EntityNotFoundException;
 
 @RestControllerAdvice
@@ -28,12 +28,12 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 
 	@ExceptionHandler(EntityNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ErroResponse entityNotFoundHandler(EntityNotFoundException ex) {
-		return new ErroResponse("Recurso não encontrado");
+	public ErrorResponse entityNotFoundHandler(EntityNotFoundException ex) {
+		return new ErrorResponse("Recurso não encontrado");
 	}
 	
-	@ExceptionHandler(TarefaStatusException.class)
-	public ResponseEntity<?> alteraStatusTarefaHandler(TarefaStatusException ex) {
+	@ExceptionHandler(TaskStatusException.class)
+	public ResponseEntity<?> alteraStatusTarefaHandler(TaskStatusException ex) {
 
 	    Problem problem = Problem.create()
 	            .withTitle("Método não permitido")
@@ -52,7 +52,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 	        HttpStatusCode status,
 	        WebRequest request) {
 
-	    ErroResponse erro = new ErroResponse(
+	    ErrorResponse erro = new ErrorResponse(
 	            null,
 	            "JSON inválido ou dados em formato incorreto"
 	    );
@@ -64,10 +64,10 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 	
 	@ExceptionHandler(PropertyReferenceException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ErroResponse propertyReferenceHandler(
+	public ErrorResponse propertyReferenceHandler(
 	        PropertyReferenceException ex) {
 
-	    return new ErroResponse(
+	    return new ErrorResponse(
 	            "Campo de ordenação inválido: " + ex.getPropertyName()
 	    );
 	}
@@ -79,10 +79,10 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
             HttpStatusCode status,
             WebRequest request) {
 
-        List<ErroResponse> errors = ex.getBindingResult()
+        List<ErrorResponse> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(x -> new ErroResponse(x.getField(), x.getDefaultMessage()))
+                .map(x -> new ErrorResponse(x.getField(), x.getDefaultMessage()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.badRequest().body(errors);
@@ -90,7 +90,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    ErroResponse entityBadCredentialsException(BadCredentialsException ex) {
-    	return new ErroResponse("Nome de Usuário e/ou senha inválidos");
+    ErrorResponse entityBadCredentialsException(BadCredentialsException ex) {
+    	return new ErrorResponse("Nome de Usuário e/ou senha inválidos");
     }
 }

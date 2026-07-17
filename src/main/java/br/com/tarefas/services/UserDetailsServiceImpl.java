@@ -6,8 +6,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import br.com.tarefas.model.Usuario;
-import br.com.tarefas.repository.UsuarioRepository;
+import br.com.tarefas.model.User;
+import br.com.tarefas.repository.UserRepository;
 import br.com.tarefas.security.UserDetailsImpl;
 import jakarta.transaction.Transactional;
 
@@ -15,12 +15,12 @@ import jakarta.transaction.Transactional;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
 	@Autowired
-	private UsuarioRepository usuarioRepository;
+	private UserRepository usuarioRepository;
 	
 	@Override
 	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Usuario usuario = usuarioRepository.findByNome(username).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+		User usuario = usuarioRepository.findByNome(username).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
 		
 		return UserDetailsImpl.build(usuario);
 	}
